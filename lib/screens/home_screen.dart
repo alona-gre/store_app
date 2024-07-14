@@ -1,6 +1,8 @@
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:store_app/screens/categories_screen.dart';
 import 'package:store_app/widgets/app_bar_icon.dart';
 import 'package:store_app/widgets/products_grid.dart';
 import 'package:store_app/widgets/sale_widget.dart';
@@ -40,7 +42,14 @@ class _HomeScreenState extends State<HomeScreen> {
           // elevation: 4,
           title: const Text('Home'),
           leading: AppBarIcon(
-            function: () {},
+            function: () {
+              Navigator.push(
+                  context,
+                  PageTransition(
+                    type: PageTransitionType.fade,
+                    child: const CategoriesScreen(),
+                  ));
+            },
             icon: IconlyBold.category,
           ),
           actions: [
@@ -81,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           // control: const SwiperControl(),
                         ),
                       ),
-                      const ProductsGrid()
+                      const ProductsGrid(),
                     ],
                   ),
                 ),

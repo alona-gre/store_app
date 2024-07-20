@@ -5,7 +5,9 @@ import 'package:store_app/const/global_colors.dart';
 import 'package:store_app/screens/product_details_screen.dart';
 
 class FeedItem extends StatelessWidget {
-  const FeedItem({Key? key}) : super(key: key);
+  final String? title;
+  final String? imageUrl;
+  const FeedItem({this.title, this.imageUrl, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -63,18 +65,19 @@ class FeedItem extends StatelessWidget {
                     color: Colors.red,
                     size: 28,
                   ),
-                  imageUrl: "https://placeimg.com/640/480/any",
+                  imageUrl: imageUrl ??
+                      'https://media.qechic.com/c/product/estanteria-adler-de-metal-y-madera-doradablanca-100x30x180-cm-520x520.jpg',
                   boxFit: BoxFit.fill,
                 ),
               ),
               const SizedBox(height: 10),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Text(
-                  "Title",
+                  title!,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 2,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 17,
                     //  fontFamily: 'Roboto',
                     fontWeight: FontWeight.w700,

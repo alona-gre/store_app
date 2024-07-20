@@ -2,8 +2,10 @@ import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:store_app/models/product.dart';
 import 'package:store_app/screens/categories_screen.dart';
 import 'package:store_app/screens/users_screen.dart';
+import 'package:store_app/services/api_service.dart';
 import 'package:store_app/widgets/app_bar_icon.dart';
 import 'package:store_app/widgets/products_grid.dart';
 import 'package:store_app/widgets/sale_widget.dart';
@@ -18,6 +20,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late TextEditingController _textEditingController;
+  List<Product> productsList = [];
 
   @override
   void initState() {
@@ -29,6 +32,18 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     _textEditingController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    getProducts();
+    super.didChangeDependencies();
+  }
+
+  Future<void> getProducts() async {
+    productsList = await APIService.getAllProducts();
+    //print('data received: ${productsList[359].images}');
+    setState(() {});
   }
 
   @override
@@ -98,7 +113,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           // control: const SwiperControl(),
                         ),
                       ),
-                      const ProductsGrid(),
+                      ProductsGrid(
+                        productList: productsList,
+                      ),
                     ],
                   ),
                 ),

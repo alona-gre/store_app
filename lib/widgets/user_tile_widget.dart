@@ -2,9 +2,12 @@ import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:store_app/const/global_colors.dart';
+import 'package:store_app/models/user.dart';
 
 class UserTile extends StatelessWidget {
-  const UserTile({Key? key}) : super(key: key);
+  final User user;
+
+  const UserTile({required this.user, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,13 +21,13 @@ class UserTile extends StatelessWidget {
           color: Colors.red,
           size: 28,
         ),
-        imageUrl: "https://placeimg.com/640/480/any",
+        imageUrl: user.avatar ?? "https://placeimg.com/640/480/any",
         boxFit: BoxFit.fill,
       ),
-      title: const Text("User name"),
-      subtitle: const Text("Email@email.com"),
+      title: Text(user.name ?? 'Name'),
+      subtitle: Text(user.email ?? 'Email'),
       trailing: Text(
-        "User role",
+        user.role ?? 'User Role',
         style: TextStyle(
           color: lightIconsColor,
           fontWeight: FontWeight.bold,

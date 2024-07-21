@@ -1,26 +1,26 @@
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:store_app/models/product.dart';
 import 'package:store_app/screens/categories_screen.dart';
 import 'package:store_app/screens/users_screen.dart';
-import 'package:store_app/services/api_service.dart';
+import 'package:store_app/services/products_repository.dart';
 import 'package:store_app/widgets/app_bar_icon.dart';
 import 'package:store_app/widgets/products_grid.dart';
 import 'package:store_app/widgets/sale_widget.dart';
 import 'package:store_app/widgets/search.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   late TextEditingController _textEditingController;
-  List<Product> productsList = [];
 
   @override
   void initState() {
@@ -35,19 +35,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
-  void didChangeDependencies() {
-    getProducts();
-    super.didChangeDependencies();
-  }
-
-  Future<void> getProducts() async {
-    productsList = await APIService.getAllProducts();
-    //print('data received: ${productsList[359].images}');
-    setState(() {});
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final productList = ref.read(productsRepositoryProvider).getProducts();
     Size size = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: () {
@@ -113,9 +102,28 @@ class _HomeScreenState extends State<HomeScreen> {
                           // control: const SwiperControl(),
                         ),
                       ),
-                      ProductsGrid(
-                        productList: productsList,
-                      ),
+                      FutureBuilder<List<Product>>(
+                        future: productList,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            return Center(
+                              child:
+                                  Text('An error occurred: ${snapshot.error}'),
+                            );
+                          } else if (snapshot.hasError) {
+                            return const Center(
+                              child: Text('No data'),
+                            );
+                          }
+
+                          return ProductsGrid(
+                            productList: snapshot.data ?? [],
+                          );
+                        },
+                      )
                     ],
                   ),
                 ),

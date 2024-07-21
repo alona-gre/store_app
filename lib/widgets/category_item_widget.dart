@@ -2,9 +2,11 @@ import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:store_app/const/global_colors.dart';
+import 'package:store_app/models/category.dart';
 
 class CategoryItem extends StatelessWidget {
-  const CategoryItem({super.key});
+  final Category category;
+  const CategoryItem({required this.category, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,14 +25,14 @@ class CategoryItem extends StatelessWidget {
                 color: Colors.red,
                 size: 28,
               ),
-              imageUrl: "https://placeimg.com/640/480/any",
+              imageUrl: category.image ?? "https://placeimg.com/640/480/any",
               boxFit: BoxFit.fill,
             ),
           ),
           Align(
             alignment: Alignment.center,
             child: Text(
-              "Categ name",
+              category.name ?? 'Other',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 24,

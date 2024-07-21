@@ -1,21 +1,44 @@
 import 'package:http/http.dart' as http;
+import 'package:store_app/models/category.dart';
 import 'package:store_app/models/product.dart';
+import 'package:store_app/models/user.dart';
 import 'package:store_app/services/api_const.dart';
 
 class APIService {
   static Future<List<Product>> getAllProducts() async {
-    final uri = Uri.https(BASE_URL, 'api/v1/products');
+    try {
+      final uri = Uri.https(
+        BASE_URL,
+        'api/v1/products',
+        {'offset': '0', 'limit': '10'},
+      );
 
-    final response = await http.get(uri);
-    // var data = jsonDecode(response.body);
+      final response = await http.get(uri);
+      return productsFromJson(response.body);
+    } catch (error) {
+      throw ('Error occurred when catching products: $error');
+    }
+  }
 
-    return productsFromJson(response.body);
+  static Future<List<Category>> getAllCategories() async {
+    try {
+      final uri = Uri.https(BASE_URL, 'api/v1/categories');
 
-    // List tempList = [];
+      final response = await http.get(uri);
+      return categoriesFromJson(response.body);
+    } catch (error) {
+      throw ('Error occurred when fetching categories: $error');
+    }
+  }
 
-    // for (var d in data) {
-    //   tempList.add(d);
-    // }
-    // return Product.productsFromJson(tempList);
+  static Future<List<User>> getAllUsers() async {
+    try {
+      final uri = Uri.https(BASE_URL, 'api/v1/users');
+
+      final response = await http.get(uri);
+      return usersFromJson(response.body);
+    } catch (error) {
+      throw ('Error occurred when fetching users: $error');
+    }
   }
 }

@@ -1,8 +1,8 @@
-import 'package:store_app/models/product.dart';
+import 'dart:convert';
 
 class Category {
   int? id;
-  Name? name;
+  String? name;
   String? image;
   DateTime? creationAt;
   DateTime? updatedAt;
@@ -17,21 +17,14 @@ class Category {
 
   factory Category.fromJson(Map<String, dynamic> json) => Category(
         id: json["id"],
-        name: nameValues.map[json["name"]]!,
+        name: json["name"],
         image: json["image"],
-        creationAt: json["creationAt"] == null
-            ? null
-            : DateTime.parse(json["creationAt"]),
-        updatedAt: json["updatedAt"] == null
-            ? null
-            : DateTime.parse(json["updatedAt"]),
       );
+}
 
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": nameValues.reverse[name],
-        "image": image,
-        "creationAt": creationAt?.toIso8601String(),
-        "updatedAt": updatedAt?.toIso8601String(),
-      };
+List<Category> categoriesFromJson(String str) {
+  return List<Category>.from(json.decode(str).map((x) {
+    // print('data: $x');
+    return Category.fromJson(x);
+  }));
 }

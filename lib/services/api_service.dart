@@ -5,12 +5,12 @@ import 'package:store_app/models/user.dart';
 import 'package:store_app/services/api_const.dart';
 
 class APIService {
-  static Future<List<Product>> getAllProducts() async {
+  static Future<List<Product>> getAllProducts(int limit) async {
     try {
       final uri = Uri.https(
         BASE_URL,
         'api/v1/products',
-        {'offset': '0', 'limit': '10'},
+        {'offset': '0', 'limit': '$limit'},
       );
 
       final response = await http.get(uri);

@@ -21,22 +21,58 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   late TextEditingController _textEditingController;
+  final ScrollController _scrollController = ScrollController();
+  List<Product> _products = [];
+  int _limit = 10;
+  bool _isLoading = false;
 
   @override
   void initState() {
     _textEditingController = TextEditingController();
+    _scrollController.addListener(_scrollListener);
+    _fetchProducts();
     super.initState();
   }
 
   @override
   void dispose() {
     _textEditingController.dispose();
+    _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels ==
+            _scrollController.position.maxScrollExtent &&
+        !_isLoading) {
+      _limit += 10;
+      _fetchProducts();
+    }
+  }
+
+  Future<void> _fetchProducts() async {
+    if (_isLoading) return;
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      final productList =
+          await ref.read(productsRepositoryProvider).getProducts(_limit);
+      setState(() {
+        _products = productList;
+      });
+    } catch (error) {
+      debugPrint('Error fetching products: $error');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final productList = ref.read(productsRepositoryProvider).getProducts();
     Size size = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: () {
@@ -44,7 +80,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          // elevation: 4,
           title: const Text('Home'),
           leading: AppBarIcon(
             function: () {
@@ -81,6 +116,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               Search(textEditingController: _textEditingController),
               Expanded(
                 child: SingleChildScrollView(
+                  controller: _scrollController,
                   child: Column(
                     children: [
                       const SizedBox(
@@ -99,31 +135,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               builder: DotSwiperPaginationBuilder(
                                   color: Colors.white,
                                   activeColor: Colors.red)),
-                          // control: const SwiperControl(),
                         ),
                       ),
-                      FutureBuilder<List<Product>>(
-                        future: productList,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const CircularProgressIndicator();
-                          } else if (snapshot.hasError) {
-                            return Center(
-                              child:
-                                  Text('An error occurred: ${snapshot.error}'),
-                            );
-                          } else if (snapshot.hasError) {
-                            return const Center(
-                              child: Text('No data'),
-                            );
-                          }
-
-                          return ProductsGrid(
-                            productList: snapshot.data ?? [],
-                          );
-                        },
-                      )
+                      ProductsGrid(
+                        productList: _products,
+                        onBottomReached: _fetchProducts,
+                      ),
+                      if (_isLoading)
+                        SizedBox(
+                          height: size.height * 0.2,
+                          child: const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        ),
                     ],
                   ),
                 ),

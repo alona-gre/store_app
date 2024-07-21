@@ -60,7 +60,7 @@ class FeedItem extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: FancyShimmerImage(
-                  height: size.height * 0.4,
+                  height: size.height * 0.15,
                   width: double.infinity,
                   errorWidget: const Icon(
                     IconlyBold.danger,
